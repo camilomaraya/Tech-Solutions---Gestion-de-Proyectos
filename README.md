@@ -172,5 +172,7 @@ Para utilizarla: abrir Postman, seleccionar **Import**, cargar el archivo, levan
 ## Autor
 
 **Camilo Andrés Meriño Araya**
+
 Desarrollo de Software Web I
+
 Instituto Profesional San Sebastián
