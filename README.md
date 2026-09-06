@@ -32,8 +32,8 @@ Se requiere PHP 8.2 o superior, Composer, MySQL 8.0 y un entorno local como Lara
 **1. Clonar el repositorio**
 
 ```bash
-git clone https://github.com/camilomaraya/Tech-Solutions---Gestion-de-Proyectos.git
-cd Tech-Solutions---Gestion-de-Proyectos
+git clone https://github.com/camilomaraya/Eva3_DesarrolloSoftwareWeb1_Tech-Solutions.git
+cd Eva3_DesarrolloSoftwareWeb1_Tech-Solutions
 ```
 
 **2. Instalar dependencias**
