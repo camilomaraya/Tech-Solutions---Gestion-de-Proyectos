@@ -1,150 +1,190 @@
-# Tech Solutions — API REST de Gestión de Proyectos
-
+# Evaluación 3 — API REST de Gestión de Proyectos
+## Desarrollo de Software Web I
 ---
  
-Implementa las operaciones **CRUD** completas sobre el recurso `proyectos`, con validaciones
-mediante *Form Requests* y códigos de respuesta HTTP acordes a cada operación.
- 
-Continúa el caso de estudio de las unidades anteriores: los controladores web y el patrón MVC
-provienen de la Unidad 1, y la persistencia con Eloquent sobre MySQL de la Unidad 2.
- 
-## Índice
- 
-- [Stack tecnológico](#stack-tecnológico)
-- [Arquitectura](#arquitectura)
-- [Instalación](#instalación)
-- [Endpoints](#endpoints)
-- [Ejemplos de uso](#ejemplos-de-uso)
-- [Notas de implementación](#notas-de-implementación)
-- [Pruebas](#pruebas)
-## Stack tecnológico
- 
-| Componente | Versión / Tecnología |
-| :--- | :--- |
+Este proyecto corresponde a la **Evaluación 3 de Desarrollo de Software Web I**.
+
+El objetivo de la evaluación es implementar las operaciones CRUD para la gestión de proyectos mediante una API REST desarrollada con Laravel.
+
+La API permite realizar las siguientes operaciones:
+
+- Crear un proyecto.
+- Listar todos los proyectos.
+- Buscar un proyecto por su ID.
+- Actualizar un proyecto existente.
+- Eliminar un proyecto.
+
+La implementación utiliza controladores de API, modelos Eloquent, validaciones mediante Form Requests y códigos de respuesta HTTP de acuerdo con los requerimientos de la evaluación.
+
+## Tecnologías utilizadas
+
+| Componente | Tecnología |
+|---|---|
 | Lenguaje | PHP 8.2 |
-| Framework | Laravel 11.56.1 |
+| Framework | Laravel 11 |
 | ORM | Eloquent |
 | Base de datos | MySQL 8.0 |
 | Entorno local | Laragon |
+| Gestor de dependencias | Composer |
+| Pruebas de API | Postman |
+
+---
+
+## Requisitos previos
+
+Antes de ejecutar el proyecto se debe contar con:
+
+- PHP 8.2 o superior.
+- Composer.
+- MySQL 8.0.
+- Un entorno local como Laragon o XAMPP.
+- Postman, opcionalmente, para probar los endpoints.
+
  
-## Arquitectura
- 
-La capa API convive con la capa web sin interferir: los controladores de `Api/` devuelven JSON,
-mientras los de la raíz siguen devolviendo vistas Blade.
- 
-```
-gestion-proyectos/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Api/
-│   │   │   │   └── ProyectoApiController.php   # CRUD REST (Unidad 3)
-│   │   │   └── ...                             # Controladores web (Unidad 1)
-│   │   └── Requests/Api/
-│   │       ├── GuardarProyectoRequest.php      # Validaciones del POST
-│   │       └── ActualizarProyectoRequest.php   # Validaciones del PUT/PATCH
-│   ├── Models/
-│   │   ├── Proyecto.php                        # Modelo Eloquent
-│   │   └── Usuario.php
-│   └── Services/
-│       └── ProyectoServicio.php
-├── database/
-│   ├── migrations/                             # usuarios, proyectos
-│   └── seeders/                                # Datos de ejemplo
-├── routes/
-│   ├── api.php                                 # Rutas REST (Unidad 3)
-│   └── web.php                                 # Rutas web (Unidad 1)
-└── docs/
-    └── Tech Solutions.postman_collection.json  # Colección de pruebas
-```
- 
+---
+
 ## Instalación
- 
-> **Requisitos previos:** PHP 8.2+, Composer, MySQL 8.0 y un entorno local como Laragon o XAMPP.
- 
-**1. Clona el repositorio**
- 
+
+### Clonar el repositorio
+
 ```bash
 git clone https://github.com/camilomaraya/Tech-Solutions---Gestion-de-Proyectos.git
-cd gestion-proyectos
 ```
- 
-**2. Instala las dependencias**
- 
+
+Ingresar al directorio del proyecto:
+
+```bash
+cd Tech-Solutions---Gestion-de-Proyectos
+```
+
+### Instalar dependencias
+
 ```bash
 composer install
 ```
- 
-**3. Crea el archivo de entorno**
- 
+
+### Crear el archivo de entorno
+
+En Windows:
+
 ```bash
-cp .env.example .env      # Windows: copy .env.example .env
+copy .env.example .env
+```
+
+En Linux o macOS:
+
+```bash
+cp .env.example .env
+```
+
+Luego generar la clave de Laravel:
+
+```bash
 php artisan key:generate
 ```
- 
-**4. Configura la base de datos**
- 
-El archivo `.env.example` ya incluye las credenciales requeridas por la evaluación:
- 
 
- 
-**5. Ejecuta migraciones y datos de ejemplo**
- 
+### Configurar la base de datos
+
+Revisar las credenciales de conexión en el archivo `.env.example`.
+
+Ejemplo:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=gestion_proyectos
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Las credenciales deben ajustarse al entorno local donde se ejecute el proyecto.
+
+### Ejecutar migraciones y datos de ejemplo
+
 ```bash
 php artisan migrate --seed
 ```
- 
-Si Laravel pregunta si desea crear la base de datos, responde que sí.
- 
-**6. Levanta el servidor**
- 
+
+### Levantar el servidor
+
 ```bash
 php artisan serve
 ```
+
+Por defecto, el proyecto quedará disponible en:
+
+```text
+http://127.0.0.1:8000
+```
+
+La ruta base de la API de proyectos es:
+
+```text
+http://127.0.0.1:8000/api/proyectos
+```
+
+---
+
+
+## Endpoints de la API
+
+| Método HTTP | Endpoint | Operación | Código de éxito | ID inexistente |
+|---|---|---|---:|---:|
+| `POST` | `/api/proyectos` | Crear proyecto | `201` | — |
+| `GET` | `/api/proyectos` | Listar todos los proyectos | `200` | — |
+| `GET` | `/api/proyectos/{id}` | Buscar proyecto por ID | `200` | `404` |
+| `PUT` / `PATCH` | `/api/proyectos/{id}` | Actualizar proyecto | `201` | `404` |
+| `DELETE` | `/api/proyectos/{id}` | Eliminar proyecto | `204` | `404` |
  
-La API queda disponible en `http://127.0.0.1:8000/api/proyectos`
- 
-## Endpoints
- 
-Base: `http://127.0.0.1:8000/api`
- 
-| Método | Ruta | Descripción | Éxito | ID inexistente |
-| :--- | :--- | :--- | :---: | :---: |
-| `GET` | `/proyectos` | Lista todos los proyectos | `200` | — |
-| `POST` | `/proyectos` | Crea un proyecto | `201` | — |
-| `GET` | `/proyectos/{id}` | Obtiene un proyecto por su ID | `200` | `404` |
-| `PUT` `PATCH` | `/proyectos/{id}` | Actualiza un proyecto | `201` | `404` |
-| `DELETE` | `/proyectos/{id}` | Elimina un proyecto | `204` | `404` |
- 
-> [!NOTE]
-> Todas las peticiones deben incluir el encabezado `Accept: application/json`, y las que envían
-> cuerpo también `Content-Type: application/json`.
- 
-<details>
-<summary><strong>Campos del recurso y reglas de validación</strong></summary>
-<br>
-| Campo | Tipo | Reglas |
-| :--- | :--- | :--- |
-| `nombre` | string | Requerido, máximo 120 caracteres |
-| `fechaInicio` | date | Requerido, formato de fecha válido |
-| `estado` | string | Requerido: `Planificado`, `En progreso` o `Finalizado` |
-| `responsable` | string | Requerido, máximo 120 caracteres |
-| `monto` | numeric | Requerido, mayor o igual a 0 |
- 
-El campo `created_by` se asigna automáticamente desde la sesión del usuario autenticado en la
-capa web y queda `null` para los registros creados vía API.
- 
-</details>
-## Ejemplos de uso
- 
-### Crear un proyecto
- 
+---
+
+## Encabezados utilizados
+
+Todas las peticiones a la API deben incluir:
+
 ```http
-POST /api/proyectos
-Content-Type: application/json
 Accept: application/json
 ```
- 
+
+Las peticiones que envían información en el cuerpo también deben incluir:
+
+```http
+Content-Type: application/json
+```
+
+---
+
+## Campos de un proyecto
+
+| Campo | Tipo | Validación |
+|---|---|---|
+| `nombre` | string | Requerido, máximo 120 caracteres |
+| `fechaInicio` | date | Requerido, fecha válida |
+| `estado` | string | Requerido |
+| `responsable` | string | Requerido, máximo 120 caracteres |
+| `monto` | numeric | Requerido, mayor o igual a 0 |
+
+Estados permitidos:
+
+```text
+Planificado
+En progreso
+Finalizado
+```
+
+---
+
+## Operaciones CRUD
+
+### 8.1 Crear un proyecto
+
+```http
+POST /api/proyectos
+```
+
+Ejemplo de solicitud:
+
 ```json
 {
     "nombre": "API REST Tech Solutions",
@@ -154,86 +194,264 @@ Accept: application/json
     "monto": 850000
 }
 ```
- 
-**Respuesta** — `201 Created`
- 
-```json
-{
-    "nombre": "API REST Tech Solutions",
-    "fechaInicio": "2026-09-10",
-    "estado": "Planificado",
-    "responsable": "Camilo Meriño",
-    "monto": 850000,
-    "updated_at": "2026-09-06T02:15:33.000000Z",
-    "created_at": "2026-09-06T02:15:33.000000Z",
-    "id": 6
-}
+
+Respuesta esperada:
+
+```text
+201 Created
 ```
- 
-<details>
-<summary><strong>Error de validación</strong> — <code>422 Unprocessable Content</code></summary>
-<br>
-```json
-{
-    "message": "El campo nombre es obligatorio. (y 4 errores más)",
-    "errors": {
-        "nombre": ["El campo nombre es obligatorio."],
-        "fechaInicio": ["El campo fecha inicio es obligatorio."],
-        "estado": ["El estado debe ser: Planificado, En progreso o Finalizado."],
-        "responsable": ["El campo responsable es obligatorio."],
-        "monto": ["El campo monto es obligatorio."]
-    }
-}
-```
- 
-</details>
-<details>
-<summary><strong>Recurso no encontrado</strong> — <code>404 Not Found</code></summary>
-<br>
-El código se devuelve como **estado HTTP real**, no dentro del cuerpo de la respuesta.
- 
-```json
-{
-    "message": "No query results for model [App\\Models\\Proyecto] 9999"
-}
-```
- 
-</details>
-## Notas de implementación
- 
-**Manejo de errores con `findOrFail()`**
-En lugar de validar manualmente la existencia del registro, se utiliza `findOrFail()`, que lanza
-una excepción `ModelNotFoundException`. Laravel la traduce automáticamente a un `404` con cuerpo
-JSON cuando la petición declara `Accept: application/json`.
- 
-**Código `201` en la actualización**
-El enunciado presenta una inconsistencia: en el encabezado del requerimiento indica `201` y en el
-detalle `200`. Ante la consulta realizada en el foro de la asignatura, el docente aclaró que
-corresponde devolver **`201`**, criterio adoptado en esta implementación. Cabe señalar que la
-convención REST habitual para una actualización es `200`, reservando `201` para la creación de
-recursos.
- 
-**Respuesta vacía en la eliminación**
-Se utiliza `response()->noContent()`, que devuelve `204` sin cuerpo, en lugar de
-`response()->json(null, 204)`, que enviaría el literal `null` como contenido.
- 
-**Validación desacoplada**
-Las reglas viven en clases *Form Request* separadas del controlador. La clase de actualización
-emplea `sometimes` junto a `required`, lo que permite que `PATCH` envíe solo los campos a
-modificar sin exigir el resto, pero rechazando valores vacíos en los que sí se envían.
- 
-**Arreglo vacío en el listado**
-Cuando no existen registros, `GET /proyectos` devuelve `[]` con estado `200`, según lo requerido.
- 
-## Pruebas
- 
-La carpeta `docs/` incluye una colección de Postman con las nueve peticiones que cubren los casos
-de éxito y de error de cada endpoint.
- 
-Para usarla: **Import** → seleccionar el archivo `.json` → ejecutar con el servidor levantado.
- 
+
+Todos los campos definidos para la creación son obligatorios y no deben enviarse vacíos.
+
 ---
+
+### 8.2 Listar todos los proyectos
+
+```http
+GET /api/proyectos
+```
+
+Respuesta esperada:
+
+```text
+200 OK
+```
+
+Si no existen proyectos registrados, la API retorna:
+
+```json
+[]
+```
+
+manteniendo el código HTTP `200`.
+
+---
+
+### Buscar un proyecto por ID
+
+```http
+GET /api/proyectos/{id}
+```
+
+Si el proyecto existe:
+
+```text
+200 OK
+```
+
+Si el proyecto no existe:
+
+```text
+404 Not Found
+```
+
+---
+
+### Actualizar un proyecto
+
+La API acepta `PUT` y `PATCH`.
+
+```http
+PUT /api/proyectos/{id}
+```
+
+o:
+
+```http
+PATCH /api/proyectos/{id}
+```
+
+Ejemplo:
+
+```json
+{
+    "estado": "Finalizado",
+    "monto": 1500000
+}
+```
+
+Si el proyecto existe:
+
+```text
+201 Created
+```
+
+Si no existe:
+
+```text
+404 Not Found
+```
+
+La respuesta incluye los datos actualizados del proyecto.
+
+---
+
+### Eliminar un proyecto
+
+```http
+DELETE /api/proyectos/{id}
+```
+
+Si el proyecto existe:
+
+```text
+204 No Content
+```
+
+La respuesta no contiene cuerpo.
+
+Si no existe:
+
+```text
+404 Not Found
+```
+
+---
+
+## Validaciones
+
+Las validaciones se encuentran separadas del controlador mediante clases **Form Request**.
+
+Archivos principales:
+
+```text
+app/Http/Requests/Api/GuardarProyectoRequest.php
+app/Http/Requests/Api/ActualizarProyectoRequest.php
+```
+
+`GuardarProyectoRequest` contiene las reglas necesarias para crear un proyecto.
+
+`ActualizarProyectoRequest` contiene las reglas utilizadas para modificar un proyecto existente.
+
+---
+
+## Controlador de la API
+
+La lógica CRUD se encuentra en:
+
+```text
+app/Http/Controllers/Api/ProyectoApiController.php
+```
+
+Métodos principales:
+
+```text
+index()     → listar todos los proyectos
+store()     → crear un proyecto
+show()      → buscar un proyecto por ID
+update()    → actualizar un proyecto
+destroy()   → eliminar un proyecto
+```
+
+---
+
+## Modelo Eloquent
+
+El recurso proyecto está representado mediante:
+
+```text
+app/Models/Proyecto.php
+```
+
+Eloquent ORM permite interactuar con la tabla de proyectos utilizando modelos y métodos de Laravel.
+
+---
+
+## Rutas API
+
+Las rutas de la evaluación se encuentran definidas en:
+
+```text
+routes/api.php
+```
+
+Flujo general:
+
+```text
+Cliente / Postman
+        ↓
+    Ruta API
+        ↓
+ProyectoApiController
+        ↓
+   Validación
+        ↓
+ Modelo Proyecto
+        ↓
+ Eloquent ORM
+        ↓
+ Base de datos
+        ↓
+ Respuesta JSON
+```
+
+---
+
+## Pruebas con Postman
+
+El repositorio incluye una colección de Postman ubicada en:
+
+```text
+docs/Tech Solutions.postman_collection.json
+```
+
+Para utilizarla:
+
+1. Abrir Postman.
+2. Seleccionar **Import**.
+3. Importar el archivo `docs/Tech Solutions.postman_collection.json`.
+4. Levantar el servidor Laravel con `php artisan serve`.
+5. Ejecutar las peticiones de la colección.
+
+La colección permite comprobar los casos de éxito, validación y recursos inexistentes.
+
+---
+
+## Códigos HTTP utilizados
+
+| Código | Significado | Uso en el proyecto |
+|---:|---|---|
+| `200` | OK | Listar y obtener proyectos |
+| `201` | Created | Crear y actualizar proyectos según indicación docente |
+| `204` | No Content | Eliminación exitosa |
+| `404` | Not Found | Proyecto solicitado no existe |
+| `422` | Unprocessable Content | Error de validación |
+
+---
+
+
+## Estructura principal 
+
+```text
+app/
+├── Http/
+│   ├── Controllers/
+│   │   └── Api/
+│   │       └── ProyectoApiController.php
+│   └── Requests/
+│       └── Api/
+│           ├── GuardarProyectoRequest.php
+│           └── ActualizarProyectoRequest.php
+└── Models/
+    └── Proyecto.php
+
+database/
+├── migrations/
+└── seeders/
+
+routes/
+└── api.php
+
+docs/
+└── Tech Solutions.postman_collection.json
+```
+
+---
+
+
+
 ## Autor
 
-Camilo Andrés Meriño Araya — Desarrollo de Software Web I — Instituto Profesional San Sebastián
-# Tech-Solutions---Gestion-de-Proyectos
+**Camilo Andrés Meriño Araya**  
+Desarrollo de Software Web I  
+Instituto Profesional San Sebastián
